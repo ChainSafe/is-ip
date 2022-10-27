@@ -1,0 +1,12 @@
+{
+  "include": ["src", "test", "bench"],
+  "compilerOptions": {
+    "target": "esnext",
+    "module": "esnext",
+    "moduleResolution": "node",
+    "outDir": "./lib",
+    "strict": true,
+    "strictNullChecks": true,
+    "sourceMap": true,
+  }
+}
