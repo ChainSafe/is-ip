@@ -5,9 +5,6 @@
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Fn = (...foo: any) => any;
 
-// We don't care about how the IP is invalid. Save time in the error case by using a single error
-export const err = new Error("Invalid IP");
-
 export class Parser {
   private index = 0;
   private input = "";
@@ -21,46 +18,46 @@ export class Parser {
   /** Run a parser, and restore the pre-parse state if it fails. */
   readAtomically<T extends Fn>(fn: T): ReturnType<T> {
     const index = this.index;
-    try {
-      return fn();
-    } catch (e) {
+    const result = fn();
+    if (result === undefined) {
       this.index = index;
-      throw e;
     }
+    return result;
   }
 
   /** Run a parser, but fail if the entire input wasn't consumed. Doesn't run atomically. */
-  parseWith<T extends Fn>(fn: T): ReturnType<T> {
+  parseWith<T extends Fn>(fn: T): ReturnType<T> | undefined {
     const result = fn();
     if (this.index !== this.input.length) {
-      throw err;
+      return undefined;
     }
     return result;
   }
 
   /** Peek the next character from the input */
-  peekChar(): string {
+  peekChar(): string | undefined {
     if (this.index >= this.input.length) {
-      throw err;
+      return undefined;
     }
     return this.input[this.index];
   }
 
   /** Read the next character from the input */
-  readChar(): string {
+  readChar(): string | undefined {
     if (this.index >= this.input.length) {
-      throw err;
+      return undefined;
     }
     return this.input[this.index++];
   }
 
   /** Read the next character from the input if it matches the target. */
-  readGivenChar(target: string): void {
+  readGivenChar(target: string): string | undefined {
     return this.readAtomically(() => {
       const char = this.readChar();
       if (char !== target) {
-        throw err;
+        return undefined;
       }
+      return char;
     });
   }
 
@@ -73,7 +70,9 @@ export class Parser {
   readSeparator<T extends Fn>(sep: string, index: number, inner: T): ReturnType<T> {
     return this.readAtomically(() => {
       if (index > 0) {
-        this.readGivenChar(sep);
+        if (this.readGivenChar(sep) === undefined) {
+          return undefined;
+        }
       }
       return inner();
     });
@@ -84,45 +83,56 @@ export class Parser {
    * at the first non-digit character or eof. Fails if the number has more
    * digits than max_digits or if there is no number.
    */
-  readNumber(radix: number, maxDigits: number | undefined, allowZeroPrefix: boolean, maxBytes: number): number {
+  readNumber(
+    radix: number,
+    maxDigits: number | undefined,
+    allowZeroPrefix: boolean,
+    maxBytes: number
+  ): number | undefined {
     return this.readAtomically(() => {
       let result = 0;
       let digitCount = 0;
 
-      const hasLeadingZero = this.peekChar() === "0";
+      const leadingChar = this.peekChar();
+      if (leadingChar === undefined) {
+        return undefined;
+      }
+      const hasLeadingZero = leadingChar === "0";
       const maxValue = 2 ** (8 * maxBytes) - 1;
 
       // eslint-disable-next-line no-constant-condition
       while (true) {
-        let digit;
-        try {
-          digit = this.readAtomically(() => {
-            const num = Number.parseInt(this.readChar(), radix);
-            if (Number.isNaN(num)) {
-              throw err;
-            }
-            return num;
-          });
-        } catch (e) {
+        const digit = this.readAtomically(() => {
+          const char = this.readChar();
+          if (char === undefined) {
+            return undefined;
+          }
+          const num = Number.parseInt(char, radix);
+          if (Number.isNaN(num)) {
+            return undefined;
+          }
+          return num;
+        });
+        if (digit === undefined) {
           break;
         }
         result *= radix;
         result += digit;
         if (result > maxValue) {
-          throw err;
+          return undefined;
         }
         digitCount += 1;
         if (maxDigits !== undefined) {
           if (digitCount > maxDigits) {
-            throw err;
+            return undefined;
           }
         }
       }
 
       if (digitCount === 0) {
-        throw err;
+        return undefined;
       } else if (!allowZeroPrefix && hasLeadingZero && digitCount > 1) {
-        throw err;
+        return undefined;
       } else {
         return result;
       }
@@ -130,12 +140,16 @@ export class Parser {
   }
 
   /** Read an IPv4 address. */
-  readIPv4Addr(): Uint8Array {
+  readIPv4Addr(): Uint8Array | undefined {
     return this.readAtomically(() => {
       const out = new Uint8Array(4);
 
       for (let i = 0; i < out.length; i++) {
-        out[i] = this.readSeparator(".", i, () => this.readNumber(10, 3, false, 1));
+        const ix = this.readSeparator(".", i, () => this.readNumber(10, 3, false, 1));
+        if (ix === undefined) {
+          return undefined;
+        }
+        out[i] = ix;
       }
 
       return out;
@@ -143,7 +157,7 @@ export class Parser {
   }
 
   /** Read an IPv6 Address. */
-  readIPv6Addr(): Uint8Array {
+  readIPv6Addr(): Uint8Array | undefined {
     /**
      * Read a chunk of an IPv6 address into `groups`. Returns the number
      * of groups read, along with a bool indicating if an embedded
@@ -156,25 +170,23 @@ export class Parser {
         const ix = i * 2;
         // Try to read a trailing embedded IPv4 address. There must be at least 4 groups left.
         if (i < groups.length - 3) {
-          try {
-            const ipv4 = this.readSeparator(":", i, () => this.readIPv4Addr());
+          const ipv4 = this.readSeparator(":", i, () => this.readIPv4Addr());
+          if (ipv4 !== undefined) {
             groups[ix] = ipv4[0];
             groups[ix + 1] = ipv4[1];
             groups[ix + 2] = ipv4[2];
             groups[ix + 3] = ipv4[3];
 
             return [ix + 4, true];
-            // eslint-disable-next-line no-empty
-          } catch (e) {}
+          }
         }
 
-        try {
-          const group = this.readSeparator(":", i, () => this.readNumber(16, 4, true, 2));
-          groups[ix] = group >> 8;
-          groups[ix + 1] = group & 255;
-        } catch (e) {
+        const group = this.readSeparator(":", i, () => this.readNumber(16, 4, true, 2));
+        if (group === undefined) {
           return [ix, false];
         }
+        groups[ix] = group >> 8;
+        groups[ix + 1] = group & 255;
       }
       return [groups.length, false];
     };
@@ -190,13 +202,17 @@ export class Parser {
 
       // IPv4 part is not allowed before `::`
       if (headIp4) {
-        throw err;
+        return undefined;
       }
 
       // Read `::` if previous code parsed less than 8 groups.
       // `::` indicates one or more groups of 16 bits of zeros.
-      this.readGivenChar(":");
-      this.readGivenChar(":");
+      if (this.readGivenChar(":") === undefined) {
+        return undefined;
+      }
+      if (this.readGivenChar(":") === undefined) {
+        return undefined;
+      }
 
       // Read the back part of the address. The :: must contain at least one
       // set of zeroes, so our max length is 7.
@@ -212,7 +228,7 @@ export class Parser {
   }
 
   /** Read an IP Address, either IPv4 or IPv6. */
-  readIPAddr(): Uint8Array {
+  readIPAddr(): Uint8Array | undefined {
     try {
       return this.readIPv4Addr();
     } catch (e) {

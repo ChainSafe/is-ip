@@ -1,6 +1,6 @@
 {
   "name": "@chainsafe/is-ip",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Check if a string is an IP address",
   "type": "module",
   "files": [
@@ -8,7 +8,11 @@
   ],
   "exports": {
     ".": {
-      "import": "./lib/index.js"
+      "node": "./lib/is-ip.node.js",
+      "import": "./lib/is-ip.js"
+    },
+    "./parse": {
+      "import": "./lib/parse.js"
     },
     "./parser": {
       "import": "./lib/parser.js"
@@ -23,7 +27,7 @@
       ]
     }
   },
-  "types": "./lib/index.d.ts",
+  "types": "./lib/is-ip.d.ts",
   "scripts": {
     "check-types": "tsc --noEmit",
     "bench": "ts-node-esm ./node_modules/.bin/benchmark bench/**/*.test.ts",
