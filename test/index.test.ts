@@ -1,5 +1,6 @@
 import { expect } from "chai";
 import { parseIPv4, parseIPv6 } from "../src/parse.js";
+import { isIPv4, isIPv6 } from "../src/is-ip.js";
 
 describe("parseIPv4", () => {
   it("should return on valid IPv4 strings", () => {
@@ -26,6 +27,7 @@ describe("parseIPv4", () => {
       },
     ]) {
       expect(parseIPv4(input)).to.deep.equal(output);
+      expect(isIPv4(input)).to.equal(true);
     }
   });
 
@@ -40,6 +42,7 @@ describe("parseIPv4", () => {
       "1a.2.3.4",
     ]) {
       expect(parseIPv4(input)).to.equal(undefined);
+      expect(isIPv4(input)).to.equal(false);
     }
   });
 });
@@ -77,6 +80,7 @@ describe("parseIPv6", () => {
       },
     ]) {
       expect(parseIPv6(input)).to.deep.equal(output);
+      expect(isIPv6(input)).to.equal(true);
     }
   });
 
@@ -90,6 +94,7 @@ describe("parseIPv6", () => {
       "0000:0000:0000:0000:0000:0000:ffff:192.168.100.228",
     ]) {
       expect(parseIPv6(input)).to.equal(undefined);
+      expect(isIPv6(input)).to.equal(false);
     }
   });
 });
