@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { parseIPv4, parseIPv6 } from "../src/index.js";
+import { parseIPv4, parseIPv6 } from "../src/parse.js";
 
 describe("parseIPv4", () => {
   it("should return on valid IPv4 strings", () => {
@@ -25,11 +25,7 @@ describe("parseIPv4", () => {
         output: Uint8Array.from([255, 255, 255, 255]),
       },
     ]) {
-      try {
-        expect(parseIPv4(input)).to.deep.equal(output);
-      } catch (e) {
-        expect.fail(`${input}: ${(e as Error).message}`);
-      }
+      expect(parseIPv4(input)).to.deep.equal(output);
     }
   });
 
@@ -43,14 +39,7 @@ describe("parseIPv4", () => {
       "hahahahahaha",
       "1a.2.3.4",
     ]) {
-      try {
-        parseIPv4(input);
-        expect.fail(input);
-      } catch (e) {
-        if ((e as Error).message === input) {
-          throw e;
-        }
-      }
+      expect(parseIPv4(input)).to.equal(undefined);
     }
   });
 });
@@ -87,11 +76,7 @@ describe("parseIPv6", () => {
         output: Uint8Array.from([0x20, 1, 0x0d, 0xc5, 0x72, 0xa3, 0, 0, 0, 0, 0x80, 0x2e, 0x33, 0x70, 0x73, 0xe4]),
       },
     ]) {
-      try {
-        expect(parseIPv6(input)).to.deep.equal(output);
-      } catch (e) {
-        expect.fail(`${input}: ${(e as Error).message}`);
-      }
+      expect(parseIPv6(input)).to.deep.equal(output);
     }
   });
 
@@ -104,15 +89,7 @@ describe("parseIPv6", () => {
       "2001:0dc5:72a3:0000::0000:802e:3370:73E4",
       "0000:0000:0000:0000:0000:0000:ffff:192.168.100.228",
     ]) {
-      try {
-        parseIPv6(input);
-        expect.fail(input);
-        // eslint-disable-next-line no-empty
-      } catch (e) {
-        if ((e as Error).message === input) {
-          throw e;
-        }
-      }
+      expect(parseIPv6(input)).to.equal(undefined);
     }
   });
 });

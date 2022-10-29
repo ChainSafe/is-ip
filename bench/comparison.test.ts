@@ -1,5 +1,5 @@
 import { itBench } from "@dapplion/benchmark";
-import * as ours from "../src/index.js";
+import * as ours from "../src/is-ip.js";
 import * as net from "node:net";
 import * as isIpLib from "is-ip";
 
