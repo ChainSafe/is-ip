@@ -229,10 +229,6 @@ export class Parser {
 
   /** Read an IP Address, either IPv4 or IPv6. */
   readIPAddr(): Uint8Array | undefined {
-    try {
-      return this.readIPv4Addr();
-    } catch (e) {
-      return this.readIPv6Addr();
-    }
+    return this.readIPv4Addr() ?? this.readIPv6Addr();
   }
 }
