@@ -9,6 +9,9 @@
   "exports": {
     ".": {
       "import": "./lib/index.js"
+    },
+    "./parser": {
+      "import": "./lib/parser.js"
     }
   },
   "typesVersions": {

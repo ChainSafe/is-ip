@@ -75,3 +75,5 @@ lib
 
 # others
 package-lock.json
+
+benchmark_data
