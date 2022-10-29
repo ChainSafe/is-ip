@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.0.1](https://github.com/ChainSafe/is-ip/compare/v2.0.0...v2.0.1) (2022-10-29)
+
+
+### Bug Fixes
+
+* fix parseIP and isIP ([#6](https://github.com/ChainSafe/is-ip/issues/6)) ([2d6e584](https://github.com/ChainSafe/is-ip/commit/2d6e5845c2605188831a4f38b70fb7cc2b3c1849))
+
 ## 2.0.0 (2022-10-29)
 
 

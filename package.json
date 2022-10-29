@@ -1,6 +1,6 @@
 {
   "name": "@chainsafe/is-ip",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Check if a string is an IP address",
   "type": "module",
   "files": [
