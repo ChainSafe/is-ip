@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.0.2](https://github.com/ChainSafe/is-ip/compare/v2.0.1...v2.0.2) (2023-08-11)
+
+
+### Bug Fixes
+
+* support parsing IPv6 addresses with zone indexes in browsers ([#10](https://github.com/ChainSafe/is-ip/issues/10)) ([9454b59](https://github.com/ChainSafe/is-ip/commit/9454b599f0ff28bb07e8331898a08cde7a2ff804))
+
 ## [2.0.1](https://github.com/ChainSafe/is-ip/compare/v2.0.0...v2.0.1) (2022-10-29)
 
 
