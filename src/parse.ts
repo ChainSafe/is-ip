@@ -16,6 +16,10 @@ export function parseIPv4(input: string): Uint8Array | undefined {
 
 /** Parse `input` into IPv6 bytes. */
 export function parseIPv6(input: string): Uint8Array | undefined {
+  // strip zone index if it is present
+  if (input.includes("%")) {
+    input = input.split("%")[0];
+  }
   if (input.length > MAX_IPV6_LENGTH) {
     return undefined;
   }
@@ -24,6 +28,10 @@ export function parseIPv6(input: string): Uint8Array | undefined {
 
 /** Parse `input` into IPv4 or IPv6 bytes. */
 export function parseIP(input: string): Uint8Array | undefined {
+  // strip zone index if it is present
+  if (input.includes("%")) {
+    input = input.split("%")[0];
+  }
   if (input.length > MAX_IPV6_LENGTH) {
     return undefined;
   }

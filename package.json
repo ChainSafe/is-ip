@@ -34,7 +34,8 @@
     "build": "tsc -p tsconfig.build.json",
     "prepublishOnly": "yarn build",
     "lint": "eslint --color --ext .ts src/ test/ bench/",
-    "test": "mocha test/**/*.test.ts"
+    "test": "mocha test/**/*.test.ts",
+    "test:chrome": "playwright-test --runner mocha test/**/*.test.ts"
   },
   "pre-push": [
     "lint"
@@ -85,9 +86,9 @@
     "karma": "^4.3.0",
     "mocha": "^10.0.0",
     "nyc": "^14.1.1",
+    "playwright-test": "^12.1.1",
     "prettier": "^2.6.2",
     "ts-node": "^10.8.1",
     "typescript": "^4.7.3"
-  },
-  "dependencies": {}
+  }
 }

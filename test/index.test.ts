@@ -64,6 +64,11 @@ const validIPv6 = [
     input: "abcd:0:1:2:3:4:5:6",
     output: Uint8Array.from([0xab, 0xcd, 0, 0, 0, 1, 0, 2, 0, 3, 0, 4, 0, 5, 0, 6]),
   },
+  {
+    // IPv6 with a zone index - https://en.wikipedia.org/wiki/IPv6_address#Scoped_literal_IPv6_addresses_(with_zone_index)
+    input: "fe80::8cb1:25ff:fec5:28e3%llw0",
+    output: Uint8Array.from([0xfe, 0x80, 0, 0, 0, 0, 0, 0, 0x8c, 0xb1, 0x25, 0xff, 0xfe, 0xc5, 0x28, 0xe3]),
+  },
 ];
 
 const invalidIPv6 = [
