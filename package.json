@@ -4,7 +4,8 @@
   "description": "Check if a string is an IP address",
   "type": "module",
   "files": [
-    "lib"
+    "lib",
+    "src"
   ],
   "exports": {
     ".": {
