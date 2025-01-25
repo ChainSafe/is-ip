@@ -117,17 +117,13 @@ describe("parse IPv4 as IPv4-mapped IPv6 address", () => {
     const testCase = [
       {
         input: "1.2.3.4",
-        output: Uint8Array.from([
-          0, 0, 0, 0,
-          0, 0, 0, 0,
-          0, 0, 0xff, 0xff,
-          1, 2, 3, 4]),
-      }
-    ]
+        output: Uint8Array.from([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0xff, 0xff, 1, 2, 3, 4]),
+      },
+    ];
     for (const { input, output } of testCase) {
-      const r = parseIPv4Mapped(input)
+      const r = parseIPv4Mapped(input);
       if (r === undefined) {
-        throw new Error('undefined address')
+        throw new Error("undefined address");
       }
 
       expect(r).to.deep.equal(output);

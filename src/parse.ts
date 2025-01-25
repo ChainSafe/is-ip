@@ -22,15 +22,10 @@ export function parseIPv4Mapped(input: string): Uint8Array | undefined {
 
   const ipv4 = parser.new(input).parseWith(() => parser.readIPv4Addr());
   if (ipv4 === undefined) {
-    return undefined
+    return undefined;
   }
 
-  return Uint8Array.from([
-    0, 0, 0, 0,
-    0, 0, 0, 0,
-    0, 0, 0xff, 0xff,
-    ipv4[0], ipv4[1], ipv4[2], ipv4[3]
-  ])
+  return Uint8Array.from([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0xff, 0xff, ipv4[0], ipv4[1], ipv4[2], ipv4[3]]);
 }
 
 /** Parse `input` into IPv6 bytes. */
@@ -58,17 +53,12 @@ export function parseIP(input: string, mapIPv4ToIPv6 = false): Uint8Array | unde
 
   const addr = parser.new(input).parseWith(() => parser.readIPAddr());
   if (!addr) {
-    return undefined
+    return undefined;
   }
 
   if (mapIPv4ToIPv6 && addr.length === 4) {
-    return Uint8Array.from([
-      0, 0, 0, 0,
-      0, 0, 0, 0,
-      0, 0, 0xff, 0xff,
-      addr[0], addr[1], addr[2], addr[3]
-    ]);
+    return Uint8Array.from([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0xff, 0xff, addr[0], addr[1], addr[2], addr[3]]);
   }
 
-  return addr
+  return addr;
 }
