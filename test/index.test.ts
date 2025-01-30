@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { parseIP, parseIPv4, parseIPv6 } from "../src/parse.js";
+import { parseIP, parseIPv4, parseIPv6, parseIPv4Mapped } from "../src/parse.js";
 import { isIP, isIPv4, isIPv6 } from "../src/is-ip.js";
 
 const validIPv4 = [
@@ -112,6 +112,25 @@ describe("parseIPv6", () => {
   });
 });
 
+describe("parse IPv4 as IPv4-mapped IPv6 address", () => {
+  it("should return an IPv4-mapped address", () => {
+    const testCase = [
+      {
+        input: "1.2.3.4",
+        output: Uint8Array.from([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0xff, 0xff, 1, 2, 3, 4]),
+      },
+    ];
+    for (const { input, output } of testCase) {
+      const r = parseIPv4Mapped(input);
+      if (r === undefined) {
+        throw new Error("undefined address");
+      }
+
+      expect(r).to.deep.equal(output);
+    }
+  });
+});
+
 describe("parseIP", () => {
   it("should return on valid IP strings", () => {
     for (const { input, output } of [...validIPv4, ...validIPv6]) {
@@ -120,9 +139,23 @@ describe("parseIP", () => {
     }
   });
 
+  it("should return on valid IP strings when mapping IPv4", () => {
+    for (const { input, output } of [...validIPv4]) {
+      expect(parseIP(input)).to.deep.equal(output);
+      expect(isIP(input)).to.equal(true);
+    }
+  });
+
   it("should throw on invalid IP strings", () => {
     for (const input of [...invalidIPv4, ...invalidIPv6]) {
       expect(parseIP(input)).to.equal(undefined);
+      expect(isIP(input)).to.equal(false);
+    }
+  });
+
+  it("should throw on invalid IP strings when mapping IPv4", () => {
+    for (const input of [...invalidIPv4, ...invalidIPv6]) {
+      expect(parseIP(input, true)).to.equal(undefined);
       expect(isIP(input)).to.equal(false);
     }
   });
