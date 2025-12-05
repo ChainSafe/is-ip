@@ -22,14 +22,14 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: ${{matrix.node}}
-      - run: yarn install
-      - run: yarn build
+      - run: pnpm install
+      - run: pnpm build
       - name: Lint
-        run: yarn lint
+        run: yarpnpmn lint
       - name: Check Types
-        run: yarn run check-types
+        run: pnpm run check-types
       - name: Unit tests
-        run: yarn test
+        run: pnpm test
 
   tests-chrome:
     runs-on: ubuntu-latest
@@ -38,10 +38,10 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: lts/*
-      - run: yarn install
-      - run: yarn build
+      - run: pnpm install
+      - run: pnpm build
       - name: Unit tests
-        run: npx xvfb-maybe yarn test:chrome
+        run: npx xvfb-maybe pnpm test:chrome
 
   maybe-release:
     name: release
@@ -66,13 +66,13 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
         if: ${{ steps.release.outputs.release_created }}
 
-      - run: yarn install
+      - run: pnpm install
         if: ${{ steps.release.outputs.release_created }}
 
-      - run: yarn build
+      - run: pnpm build
         if: ${{ steps.release.outputs.release_created }}
 
-      - run: yarn publish
+      - run: pnpm publish
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_AUTH_TOKEN}}
         if: ${{ steps.release.outputs.release_created }}
