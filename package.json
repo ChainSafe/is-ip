@@ -7,6 +7,7 @@
     "lib",
     "src"
   ],
+  "packageManager": "pnpm@10.24.0",
   "exports": {
     ".": {
       "node": "./lib/is-ip.node.js",
@@ -33,7 +34,7 @@
     "check-types": "tsc --noEmit",
     "bench": "ts-node-esm ./node_modules/.bin/benchmark bench/**/*.test.ts",
     "build": "tsc -p tsconfig.build.json",
-    "prepublishOnly": "yarn build",
+    "prepublishOnly": "pnpm build",
     "lint": "eslint --color --ext .ts src/ test/ bench/",
     "test": "mocha test/**/*.test.ts",
     "test:chrome": "playwright-test --runner mocha test/**/*.test.ts"
