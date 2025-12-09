@@ -8,6 +8,11 @@ on:
     branches:
       - '**'
 
+permissions:
+  id-token: write       # Required for OIDC
+  contents: write       # Required to create a Github release
+  pull-requests: write  # Required to add tags to pull requests
+
 jobs:
   tests:
     name: tests
@@ -18,10 +23,10 @@ jobs:
         os: [windows-latest, ubuntu-latest, macos-latest]
         node: [22]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v6
       - name: Setup pnpm
         uses: pnpm/action-setup@v4      
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v6
         with:
           node-version: ${{matrix.node}}
       - run: pnpm install
@@ -36,10 +41,10 @@ jobs:
   tests-chrome:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v6
       - name: Setup pnpm
-        uses: pnpm/action-setup@v4            
-      - uses: actions/setup-node@v3
+        uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v6
         with:
           node-version: lts/*
       - run: pnpm install
@@ -53,7 +58,7 @@ jobs:
     needs: [tests, tests-chrome]
     if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     steps:
-      - uses: google-github-actions/release-please-action@v3
+      - uses: googleapis/release-please-action@v4
         id: release
         with:
           release-type: node
@@ -61,17 +66,16 @@ jobs:
           bump-minor-pre-major: false
           changelog-types: '[{"type":"feat","section":"Features","hidden":false},{"type":"fix","section":"Bug Fixes","hidden":false},{"type":"chore","section":"Miscellaneous","hidden":false}]'
 
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v6
         if: ${{ steps.release.outputs.release_created }}
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4              
         if: ${{ steps.release.outputs.release_created }}
 
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v6
         with:
           node-version: 22
-          registry-url: 'https://registry.npmjs.org'
         if: ${{ steps.release.outputs.release_created }}
 
       - run: pnpm install
@@ -80,7 +84,5 @@ jobs:
       - run: pnpm build
         if: ${{ steps.release.outputs.release_created }}
 
-      - run: pnpm publish
-        env:
-          NODE_AUTH_TOKEN: ${{secrets.NPM_AUTH_TOKEN}}
+      - run: pnpm publish --access public --provenance
         if: ${{ steps.release.outputs.release_created }}
