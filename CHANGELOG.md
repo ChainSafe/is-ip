@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.1.1](https://github.com/ChainSafe/is-ip/compare/v2.1.0...v2.1.1) (2025-12-08)
+
+
+### Miscellaneous
+
+* migrate `yarn 1` to `pnpm` ([#16](https://github.com/ChainSafe/is-ip/issues/16)) ([b21836d](https://github.com/ChainSafe/is-ip/commit/b21836d2a6ed70518f0b36651d66094a9b04cfe7))
+
 ## [2.1.0](https://github.com/ChainSafe/is-ip/compare/v2.0.2...v2.1.0) (2025-01-30)
 
 
